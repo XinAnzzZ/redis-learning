@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration>
+    <!-- magenta:洋红 -->
+    <!-- boldMagenta:粗红-->
+    <!-- cyan:青色 -->
+    <!-- white:白色 -->
+    <!-- magenta:洋红 -->
+    <property name="LOG_PATTERN"
+              value="%date{yyyy-MM-dd HH:mm:ss} |%-5level |%thread |%file:%line |%logger |%msg%n"/>
+
+    <!-- 控制台打印日志配置 -->
+    <appender name="console_log" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss} |%highlight(%-5level) |%boldYellow(%thread) |%blue(%file:%line) |%magenta(%logger) |%cyan(%msg%n)</pattern>
+        </encoder>
+    </appender>
+
+    <root level="DEBUG">
+        <!-- 上线请注释下面这行代码 -->
+        <appender-ref ref="console_log"/>
+    </root>
+
+</configuration>

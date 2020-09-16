@@ -1,0 +1,21 @@
+server:
+  port: 8088
+
+spring:
+  profiles:
+    active: local
+
+  # redis 和 mysql 的配置请使用自己本地配置
+  redis:
+    host:
+    password:
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username:
+    password:
+    url:
+
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL5Dialect
