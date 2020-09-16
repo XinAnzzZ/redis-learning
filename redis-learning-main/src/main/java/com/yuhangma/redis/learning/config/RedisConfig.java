@@ -27,8 +27,8 @@ public class RedisConfig {
      * @see JdkSerializationRedisSerializer
      * @see RedisTemplate#afterPropertiesSet()
      */
-    @Bean
-    public RedisTemplate<String, PersonDTO> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    @Bean(name = "personRedisTemplate")
+    public RedisTemplate<String, PersonDTO> personRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, PersonDTO> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
         template.setKeySerializer(new StringRedisSerializer());

@@ -24,17 +24,17 @@ public class RedisListOperationTest extends RedisLearningAppTest {
         final String v1 = "v1";
         final String v2 = "v2";
         // 删除 key
-        stringRedisTemplate.delete(key);
+        redisTemplate.delete(key);
 
         // 往 v1 前面插入一个值 v2，由于此时 key 不存在，返回 0
-        long result1 = stringRedisTemplate.opsForList().leftPush(key, v1, v2);
+        long result1 = redisTemplate.opsForList().leftPush(key, v1, v2);
         Assert.assertEquals(result1, 0L);
         // 正常插入，返回 list 的 size
-        long result2 = stringRedisTemplate.opsForList().leftPush(key, v1);
-        long size = stringRedisTemplate.opsForList().size(key);
+        long result2 = redisTemplate.opsForList().leftPush(key, v1);
+        long size = redisTemplate.opsForList().size(key);
         Assert.assertEquals(result2, size);
         // 往 v2 前面插入一个值 v1，由于此时 v2 不存在，返回 -1
-        long result3 = stringRedisTemplate.opsForList().leftPush(key, v2, v1);
+        long result3 = redisTemplate.opsForList().leftPush(key, v2, v1);
         Assert.assertEquals(result3, -1L);
     }
 
@@ -46,10 +46,10 @@ public class RedisListOperationTest extends RedisLearningAppTest {
         final String key = "test:list:size";
         redisTemplate.delete(key);
         // 当 key 不存在时返回 0，在 pipeline 或者 transaction 中使用此命令时，返回 null
-        Assert.assertEquals(0L, listOps().size(key).longValue());
+        Assert.assertEquals(0L, listOps.size(key).longValue());
 
-        listOps().leftPush(key, PersonDTO.newRandomPerson());
-        Assert.assertEquals(1L, (long) Optional.ofNullable(listOps().size(key)).orElse(0L));
+        listOps.leftPush(key, PersonDTO.newRandomPerson());
+        Assert.assertEquals(1L, (long) Optional.ofNullable(listOps.size(key)).orElse(0L));
     }
 
     @Test
@@ -57,9 +57,9 @@ public class RedisListOperationTest extends RedisLearningAppTest {
         final String key = "test:list:get";
         redisTemplate.delete(key);
 
-        valueOps().set(key, PersonDTO.newRandomPerson());
+        personValueOps.set(key, PersonDTO.newRandomPerson());
 
-        PersonDTO x = valueOps().get(key);
+        PersonDTO x = personValueOps.get(key);
         System.out.println(x);
     }
 }
