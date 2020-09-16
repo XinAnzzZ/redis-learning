@@ -318,7 +318,6 @@ public class RedisKeyOperationTest extends RedisLearningAppTest {
 
     /**
      * 增量迭代
-     *
      */
     @Test
     public void scanTest() {
