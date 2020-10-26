@@ -4,12 +4,13 @@ import com.yuhangma.redis.learning.RedisLearningAppTest;
 import org.junit.Test;
 import org.springframework.data.redis.RedisSystemException;
 import org.springframework.data.redis.connection.DataType;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 
 import java.time.OffsetDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
@@ -318,9 +319,54 @@ public class RedisKeyOperationTest extends RedisLearningAppTest {
 
     /**
      * 增量迭代
+     * <p>
+     * 在某些情况下，我们需要遍历数据库中所有的 key，或者所有匹配某个格式的 key，我们可以使用 KEYS 命令来完成。
+     * 但是正如 {@link RedisKeyOperationTest#keysTest()} 中描述的那样，尽管 Redis 的很快，KEYS 命令也很快，
+     * 但是在数据库中 key 的数量特别多的时候还是会非常的影响性能，所以通常情况下，我们都是避免使用 KEYS 命令，而是使用 SCAN 命令。
+     * </p>
+     * <p>
+     * 正如其名字所表示的那样，SCAN 指的是浏览整个数据库，它和 KEYS 的区别主要在于，它并不是一次性完成的。我们知道 Redis 是
+     * 单线程的，如果一次完成，而这次遍历的耗时非常长的话，那么其他的客户端发送的请求都会被阻塞，导致整个系统性能下降。
+     * 而 SCAN 命令是每次遍历出一部分的 key，然后返回这次遍历结束的 index，下一次只需要从这个 index 开始继续遍历即可；
+     * 直到 Redis 返回 0，表示遍历结束。
+     * </p>
+     * <p>
+     * 类似的，SMEMBERS、HGETALL、HKEYS 等查询所有的命令，它们的时间复杂度都是 O(n)，所以也都是会在数据量非常大的情况下非常的影响
+     * 数据库的性能，所以应该尽量避免使用，而是考虑使用 SSCAN、HSCAN、ZSCAN 等命令。
+     * </p>
+     * <p>
+     * SCAN 命令的缺点：由于 SCAN 命令是多次迭代，非原子操作，每次只是用 index 来记录迭代的位置，这也就意味着在整个 SCAN 的过程中，
+     * key 会发生变化，在 SCAN 过程中被删除的 key 可能会被迭代到，有些新增的 key 会迭代不到，有些 key 会被多次迭代，
+     * 所以在执行这个操作的时候，客户端必须充分考虑到这些情况。
+     * 基于此，在某些特殊场景下，我们需要严格的统计的时候，我们可以考虑用集合类型来保存所有的 key，从而尽量避免这些问题。
+     * </p>
+     *
+     * @see RedisKeyOperationTest#keysTest()
+     * @see <a href="http://redis.io/commands/scan">Redis Documentation: SCAN</a>
+     * @see <a href="http://doc.redisfans.com/key/scan.html">Redis 命令参考: SCAN</a>
      */
     @Test
     public void scanTest() {
+        String keyPrefix = "k";
+        // 设置 1000 个 key
+        Map<String, String> kvs = new HashMap<>((int) ((float) 1000 / 0.75F + 1.0F));
+        for (int i = 0; i < 1000; i++) {
+            String key = keyPrefix + i;
+            kvs.put(key, v1);
+        }
+        valueOps.multiSet(kvs);
 
+        // 进行增量迭代
+        Set<String> keys = redisTemplate.execute((RedisCallback<Set<String>>) connection -> {
+            Set<String> keysTmp = new HashSet<>();
+            Cursor<byte[]> cursor = connection.scan(new ScanOptions.ScanOptionsBuilder().match(keyPrefix + "*").count(1000).build());
+            while (cursor.hasNext()) {
+                keysTmp.add(new String(cursor.next()));
+            }
+            return keysTmp;
+        });
+
+        // 得到的 key 和设置的 key 完全一致
+        assertTrue(keys.containsAll(kvs.keySet()));
     }
 }
