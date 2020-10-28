@@ -75,4 +75,33 @@ public class RedisValueOperationTest extends RedisLearningAppTest {
         List<String> values = valueOps.multiGet(kvs.keySet());
         assertTrue(values.containsAll(kvs.values()));
     }
+
+    /**
+     * 设置多个，当且仅当所有的 key 都不存在时设置成功
+     *
+     * @see <a href="http://redis.io/commands/msetnx">Redis Documentation: MSETNX</a>
+     * @see <a href="http://doc.redisfans.com/string/msetnx.html">Redis 命令参考: MSETNX</a>
+     */
+    @Test
+    public void multiSetIfAbsentTest() {
+        Map<String, String> kvs = Map.of(k1, v1,
+                k2, v2,
+                k3, v3,
+                k4, v4,
+                k5, v5);
+        Boolean success1 = valueOps.multiSetIfAbsent(kvs);
+        // 当所有 key 不存在时设置成功
+        assertTrue(success1);
+        List<String> values = valueOps.multiGet(kvs.keySet());
+        assertTrue(values.containsAll(kvs.values()));
+
+        // 所有 key 都存在时设置失败
+        Boolean success2 = valueOps.multiSetIfAbsent(kvs);
+        assertFalse(success2);
+
+        // 删掉 4 个 key，只留一个 key 时也是失败
+        redisTemplate.delete(List.of(k1, k2, k3, k4));
+        Boolean success3 = valueOps.multiSetIfAbsent(kvs);
+        assertFalse(success3);
+    }
 }
