@@ -30,10 +30,17 @@ import java.util.UUID;
 @SuppressWarnings("all")
 public class RedisLearningAppTest {
 
+    protected static final String UNIT_TEST_KEY_PREFIX = "unit:test:key:";
+
     /**
-     * before test 中初始化这些 key，并且会保证这些 key 在库中不存在
+     * before test 中删除这些 key，after test 中也会删除一次。
      */
-    protected String k1, k2, k3, k4, k5;
+    protected static final String
+            k1 = UNIT_TEST_KEY_PREFIX + 1,
+            k2 = UNIT_TEST_KEY_PREFIX + 2,
+            k3 = UNIT_TEST_KEY_PREFIX + 3,
+            k4 = UNIT_TEST_KEY_PREFIX + 4,
+            k5 = UNIT_TEST_KEY_PREFIX + 5;
 
     protected static final String v1 = "v1", v2 = "v2", v3 = "v3", v4 = "v4", v5 = "v5";
 
@@ -67,19 +74,14 @@ public class RedisLearningAppTest {
     @Before
     public void beforeTest() {
         log.info("-------- before test: 初始化 key 开始 -----------");
-        // 初始化 5 个 key，这 5 个 key 在库中不存在
-        k1 = getRandomNotExistKey();
-        k2 = getRandomNotExistKey();
-        k3 = getRandomNotExistKey();
-        k4 = getRandomNotExistKey();
-        k5 = getRandomNotExistKey();
+        // 删除多个 key，List.of() 是 JDK11 新的 API
+        redisTemplate.delete(List.of(k1, k2, k3, k4, k5));
         log.info("-------- before test: 初始化 key 完成 -----------");
     }
 
     @After
     public void afterTest() {
         log.info("-------- after test: 删除 key 开始 -----------");
-        // 删除多个 key，List.of() 是 JDK11 新的 API
         redisTemplate.delete(List.of(k1, k2, k3, k4, k5));
         log.info("-------- after test: 删除 key 完成 -----------");
     }
