@@ -55,6 +55,14 @@ public class RedisValueOperationTest extends RedisLearningAppTest {
         assertEquals(v2, newVal);
     }
 
+    /**
+     * set/get 多个
+     *
+     * @see <a href="http://redis.io/commands/mset">Redis Documentation: MSET</a>
+     * @see <a href="http://doc.redisfans.com/string/mset.html">Redis 命令参考: MSET</a>
+     * @see <a href="http://redis.io/commands/mget">Redis Documentation: MGET</a>
+     * @see <a href="http://doc.redisfans.com/string/mget.html">Redis 命令参考: MGET</a>
+     */
     @Test
     public void multiSetAndMultiGetTest() {
         Map<String, String> kvs = Map.of(k1, v1,
