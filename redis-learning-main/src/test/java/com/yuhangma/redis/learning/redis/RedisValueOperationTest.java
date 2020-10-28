@@ -1,7 +1,9 @@
 package com.yuhangma.redis.learning.redis;
 
 import com.yuhangma.redis.learning.RedisLearningAppTest;
+import com.yuhangma.redis.learning.model.PersonDTO;
 import org.junit.Test;
+import org.springframework.data.redis.RedisSystemException;
 
 import java.util.List;
 import java.util.Map;
@@ -34,6 +36,32 @@ public class RedisValueOperationTest extends RedisLearningAppTest {
     }
 
     /**
+     * Redis 命令：STRLEN
+     * <p>
+     * 查询字符串长度
+     * 1、如果 key 不存在返回 0
+     * 2、如果 key 的类型不是 string，那么 redis 会抛出一个错误，spring-data-redis 会将其封装为一个 {@link RedisSystemException} 异常
+     *
+     * @see <a href="http://redis.io/commands/strlen">Redis Documentation: STRLEN</a>
+     * @see <a href="http://doc.redisfans.com/string/strlen.html">Redis 命令参考: STRLEN</a>
+     */
+    @Test
+    public void strLengthTest() {
+        // key 不存在时返回 0
+        long size1 = valueOps.size(k1);
+        assertEquals(0L, size1);
+
+        // key 的类型不是 string，抛出异常
+        listOps.leftPush(k1, PersonDTO.newRandomPerson());
+        expectedException.expect(RedisSystemException.class);
+        valueOps.size(k1);
+
+        valueOps.set(k1, v1);
+        long size2 = valueOps.size(k1);
+        assertEquals(v1.length(), size2);
+    }
+
+    /**
      * 字符串追加内容
      *
      * @see <a href="http://redis.io/commands/append">Redis Documentation: APPEND</a>
@@ -41,15 +69,14 @@ public class RedisValueOperationTest extends RedisLearningAppTest {
      */
     @Test
     public void appendTest() {
-        String key = getRandomNotExistKey();
         // 当 key 不存在时，append 等同于 set
-        valueOps.append(key, v2);
-        String value1 = valueOps.get(key);
+        valueOps.append(k1, v2);
+        String value1 = valueOps.get(k1);
         assertEquals(v2, value1);
 
-        valueOps.set(key, v1);
-        valueOps.append(key, v2);
-        String value2 = valueOps.get(key);
+        valueOps.set(k1, v1);
+        valueOps.append(k1, v2);
+        String value2 = valueOps.get(k1);
         assertEquals(v1 + v2, value2);
     }
 
@@ -61,19 +88,20 @@ public class RedisValueOperationTest extends RedisLearningAppTest {
      */
     @Test
     public void getSetTest() {
-        String key = getRandomNotExistKey();
         // 如果 key 不存在，返回 null，并且设置
-        String oldVal1 = valueOps.getAndSet(key, v1);
+        String oldVal1 = valueOps.getAndSet(k1, v1);
         assertNull(oldVal1);
 
-        String oldVal2 = valueOps.getAndSet(key, v2);
+        String oldVal2 = valueOps.getAndSet(k1, v2);
         assertEquals(v1, oldVal2);
 
-        String newVal = valueOps.get(key);
+        String newVal = valueOps.get(k1);
         assertEquals(v2, newVal);
     }
 
     /**
+     * Redis 命令：MSET/MGET
+     * <p>
      * set/get 多个
      *
      * @see <a href="http://redis.io/commands/mset">Redis Documentation: MSET</a>
@@ -95,6 +123,8 @@ public class RedisValueOperationTest extends RedisLearningAppTest {
     }
 
     /**
+     * Redis 命令：MSETNX
+     * <p>
      * 设置多个，当且仅当所有的 key 都不存在时设置成功
      *
      * @see <a href="http://redis.io/commands/msetnx">Redis Documentation: MSETNX</a>

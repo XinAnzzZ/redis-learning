@@ -16,7 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author Moore
@@ -84,19 +83,6 @@ public class RedisLearningAppTest {
         log.info("-------- after test: 删除 key 开始 -----------");
         redisTemplate.delete(List.of(k1, k2, k3, k4, k5));
         log.info("-------- after test: 删除 key 完成 -----------");
-    }
-
-    /**
-     * 获取随机的 key，可以保证一定不会在数据库中存在
-     *
-     * @return the random key
-     */
-    protected String getRandomNotExistKey() {
-        String randomKey;
-        do {
-            randomKey = UUID.randomUUID().toString().replace("-", "");
-        } while (redisTemplate.hasKey(randomKey));
-        return randomKey;
     }
 
 }

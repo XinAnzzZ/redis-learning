@@ -354,6 +354,8 @@ public class RedisKeyOperationTest extends RedisLearningAppTest {
             String key = keyPrefix + i;
             kvs.put(key, v1);
         }
+        // 测试前，删除所有 key
+        redisTemplate.delete(kvs.keySet());
         valueOps.multiSet(kvs);
 
         // 进行增量迭代
@@ -368,5 +370,8 @@ public class RedisKeyOperationTest extends RedisLearningAppTest {
 
         // 得到的 key 和设置的 key 完全一致
         assertTrue(keys.containsAll(kvs.keySet()));
+
+        // 测试结束，删除所有 key
+        redisTemplate.delete(kvs.keySet());
     }
 }
