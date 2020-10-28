@@ -16,6 +16,24 @@ import static org.junit.Assert.*;
 public class RedisValueOperationTest extends RedisLearningAppTest {
 
     /**
+     * set 和 get 测试
+     *
+     * @see <a href="http://redis.io/commands/set">Redis Documentation: SET</a>
+     * @see <a href="http://doc.redisfans.com/string/set.html">Redis 命令参考: SET</a>
+     * @see <a href="http://redis.io/commands/get">Redis Documentation: GET</a>
+     * @see <a href="http://doc.redisfans.com/string/get.html">Redis 命令参考: GET</a>
+     */
+    @Test
+    public void setAndGetTest() {
+        String value1 = valueOps.get(k1);
+        assertNull(value1);
+
+        valueOps.set(k1, v1);
+        String value2 = valueOps.get(k1);
+        assertEquals(v2, value2);
+    }
+
+    /**
      * 字符串追加内容
      *
      * @see <a href="http://redis.io/commands/append">Redis Documentation: APPEND</a>
