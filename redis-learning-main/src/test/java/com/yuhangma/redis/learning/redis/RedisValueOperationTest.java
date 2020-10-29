@@ -32,7 +32,28 @@ public class RedisValueOperationTest extends RedisLearningAppTest {
 
         valueOps.set(k1, v1);
         String value2 = valueOps.get(k1);
-        assertEquals(v2, value2);
+        assertEquals(v1, value2);
+    }
+
+    /**
+     * Redis 命令：SETNX
+     * <p>
+     * key 不存在时才设置
+     *
+     * @see <a href="http://redis.io/commands/setnx">Redis Documentation: SETNX</a>
+     * @see <a href="http://doc.redisfans.com/string/setnx.html">Redis 命令参考: SETNX</a>
+     */
+    @Test
+    public void setIfAbsentTest() {
+        Boolean success1 = valueOps.setIfAbsent(k1, v1);
+        assertTrue(success1);
+        String value = valueOps.get(k1);
+        assertEquals(v1, value);
+
+        Boolean success2 = valueOps.setIfAbsent(k1, v2);
+        assertFalse(success2);
+        String value2 = valueOps.get(k1);
+        assertNotEquals(v2, value2);
     }
 
     /**
