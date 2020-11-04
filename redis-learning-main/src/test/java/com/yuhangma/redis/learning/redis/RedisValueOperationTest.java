@@ -36,6 +36,34 @@ public class RedisValueOperationTest extends RedisLearningAppTest {
     }
 
     /**
+     * Redis 命令：SETRANGE、GETRANGE
+     * <p>
+     * 对字符串进行范围修改/读取，包含起始和终止位置
+     *
+     * @see <a href="http://redis.io/commands/setrange">Redis Documentation: SETRANGE</a>
+     * @see <a href="http://doc.redisfans.com/string/setrange.html">Redis 命令参考: SETRANGE</a>
+     * @see <a href="http://redis.io/commands/getrange">Redis Documentation: GETRANGE</a>
+     * @see <a href="http://doc.redisfans.com/string/getrange.html">Redis 命令参考: GETRANGE</a>
+     */
+    @Test
+    public void setAndGetRangeTest() {
+        String originValue = "abcdefg";
+        valueOps.set(k1, originValue);
+
+        int start = 0;
+        int end = 3;
+        String range1 = valueOps.get(k1, start, end);
+        // redis 的 getRange 会包含起点和终点，而 java 的 String 的 subString 只包含起点，所以需要加一。
+        assertEquals(originValue.substring(start, end + 1), range1);
+
+        // 从 b 位置开始（包含 b）进行替换，bcde 将会替换为 test
+        valueOps.set(k1, "test", originValue.indexOf('b'));
+        String newValue1 = valueOps.get(k1);
+        String expectedValue = originValue.replace("bcde", "test");
+        assertEquals(expectedValue, newValue1);
+    }
+
+    /**
      * Redis 命令：SETNX
      * <p>
      * key 不存在时才设置
