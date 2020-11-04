@@ -7,6 +7,7 @@ import org.springframework.data.redis.RedisSystemException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -200,5 +201,29 @@ public class RedisValueOperationTest extends RedisLearningAppTest {
         redisTemplate.delete(List.of(k1, k2, k3, k4));
         Boolean success3 = valueOps.multiSetIfAbsent(kvs);
         assertFalse(success3);
+    }
+
+    /**
+     * Redis 命令：SETEX、PSETEX
+     * <p>
+     * 设置一个值并且指定生存时间，Redis 原生命令中有两个相关的命令，分别是“SETEX”，“PSETNX”，两者除了过期时间的单位不同并无其他差异。
+     * 其中 SETEX 过期时间的单位为“秒”，PSETEX 过期时间单位为“毫秒”。而 spring-data-redis 将这两个命令统一成为一个方法。
+     *
+     * @see <a href="http://redis.io/commands/setex">Redis Documentation: SETEX</a>
+     * @see <a href="http://doc.redisfans.com/string/setex.html">Redis 命令参考: SETEX</a>
+     * @see <a href="http://redis.io/commands/psetex">Redis Documentation: PSETEX</a>
+     * @see <a href="http://doc.redisfans.com/string/psetex.html">Redis 命令参考: PSETEX</a>
+     */
+    @Test
+    public void setExTest() throws InterruptedException {
+        // 设置一个值，存活时间为 3s，查询结果不为 null
+        valueOps.set(k1, v1, 3, TimeUnit.SECONDS);
+        String value1 = valueOps.get(k1);
+        assertNotNull(value1);
+
+        // 休眠 3s 后再次查询，结果为 null
+        TimeUnit.SECONDS.sleep(3);
+        String value2 = valueOps.get(k1);
+        assertNull(value2);
     }
 }
