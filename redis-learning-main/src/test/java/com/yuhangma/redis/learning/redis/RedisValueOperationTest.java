@@ -12,11 +12,22 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.*;
 
 /**
+ * 本测试类为 Redis 对于 String 类型 key 的所有命令的演示测试类。
+ * <p>
+ * Redis 对于 String 类型的 key 主要有三大类操作:
+ * <ul>
+ *     <li>1、对于字符串的基本操作，比如对字符串进行追加、修改、截取等。</li>
+ *     <li>2、对于数值字符串的特殊操作，比如对数值进行自增、自减等。</li>
+ *     <li>3、对于字节的一些特殊操作，比如设置某一“bit（位）”的值，用此特性可以实现例如“bitmap（位图）等。”</li>
+ * </ul>
+ *
  * @author Moore
  * @since 2020/10/26
  */
 @SuppressWarnings("all")
 public class RedisValueOperationTest extends RedisLearningAppTest {
+
+    //////////////////////// 字符串基础操作 ////////////////////////
 
     /**
      * set 和 get 测试
@@ -226,4 +237,8 @@ public class RedisValueOperationTest extends RedisLearningAppTest {
         String value2 = valueOps.get(k1);
         assertNull(value2);
     }
+
+    //////////////////////// 数值相关 ////////////////////////
+
+
 }
