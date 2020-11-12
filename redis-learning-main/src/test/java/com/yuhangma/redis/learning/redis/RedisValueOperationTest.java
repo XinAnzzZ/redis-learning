@@ -4,6 +4,7 @@ import com.yuhangma.redis.learning.RedisLearningAppTest;
 import com.yuhangma.redis.learning.model.PersonDTO;
 import org.junit.Test;
 import org.springframework.data.redis.RedisSystemException;
+import org.springframework.data.redis.core.ValueOperations;
 
 import java.util.List;
 import java.util.Map;
@@ -240,5 +241,35 @@ public class RedisValueOperationTest extends RedisLearningAppTest {
 
     //////////////////////// 数值相关 ////////////////////////
 
+    /**
+     * Redis 命令：INCR、INCRBY、INCRBYFLOAT、DECR、DECRBY.
+     * <p>
+     * 数值增加/减少，增加或减少的数值可以是整数，也可以是小数。Redis 原生有 5 个命令，spring-data-redis 对其实现为
+     * {@link ValueOperations#increment(Object, long)} 和 {@link ValueOperations#increment(Object, double)}，
+     * 分别对应整数和小数的操作，减少值只需将对应的值设置为负数即可。
+     */
+    @Test
+    public void incrTest() {
+        // key 不存在时，那么 key 的值会先被初始化为 0，然后执行操作
+        long result1 = valueOps.increment(k1, 1);
+        assertEquals(1, result1);
 
+        long result2 = valueOps.increment(k1, 3);
+        assertEquals(4, result2);
+
+        // 对于小数的操作
+        double result3 = valueOps.increment(k2, 1.1);
+        assertEquals(1.1, result3, 0);
+
+        double result4 = valueOps.increment(k2, 2.3);
+        assertEquals(3.4, result4, 0);
+
+        // 如果 key 的值是整数，可以对其进行小数操作
+        double result5 = valueOps.increment(k1, 1.2);
+        assertEquals(5.2, result5, 0);
+
+        // 如果 key 的值是小数，不能对其进行整数操作
+        expectedException.expect(RedisSystemException.class);
+        valueOps.increment(k1, 1);
+    }
 }
