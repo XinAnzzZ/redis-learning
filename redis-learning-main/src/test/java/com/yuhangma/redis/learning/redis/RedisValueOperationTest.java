@@ -272,4 +272,6 @@ public class RedisValueOperationTest extends RedisLearningAppTest {
         expectedException.expect(RedisSystemException.class);
         valueOps.increment(k1, 1);
     }
+
+    //////////////////////// 字节操作相关 ////////////////////////
 }
