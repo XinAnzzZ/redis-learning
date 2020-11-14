@@ -247,6 +247,17 @@ public class RedisValueOperationTest extends RedisLearningAppTest {
      * 数值增加/减少，增加或减少的数值可以是整数，也可以是小数。Redis 原生有 5 个命令，spring-data-redis 对其实现为
      * {@link ValueOperations#increment(Object, long)} 和 {@link ValueOperations#increment(Object, double)}，
      * 分别对应整数和小数的操作，减少值只需将对应的值设置为负数即可。
+     *
+     * @see <a href="http://redis.io/commands/incr">Redis Documentation: INCR</a>
+     * @see <a href="http://doc.redisfans.com/string/incr.html">Redis 命令参考: INCR</a>
+     * @see <a href="http://redis.io/commands/incrby">Redis Documentation: INCRBY</a>
+     * @see <a href="http://doc.redisfans.com/string/incrby.html">Redis 命令参考: INCRBY</a>
+     * @see <a href="http://redis.io/commands/incrbyfloat">Redis Documentation: INCRBYFLOAT</a>
+     * @see <a href="http://doc.redisfans.com/string/incrbyfloat.html">Redis 命令参考: INCRBYFLOAT</a>
+     * @see <a href="http://redis.io/commands/decr">Redis Documentation: DECR</a>
+     * @see <a href="http://doc.redisfans.com/string/decr.html">Redis 命令参考: DECR</a>
+     * @see <a href="http://redis.io/commands/decrby">Redis Documentation: DECRBY</a>
+     * @see <a href="http://doc.redisfans.com/string/decrby.html">Redis 命令参考: DECRBY</a>
      */
     @Test
     public void incrTest() {
@@ -274,4 +285,31 @@ public class RedisValueOperationTest extends RedisLearningAppTest {
     }
 
     //////////////////////// 字节操作相关 ////////////////////////
+
+    /**
+     * Redis 命令：GETBIT、SETBIT.
+     * <p>
+     * SETBIT [key] [offset] [0/1]：设置键 key 对应的值的偏移量为 offset 位置的值为 0 或 1.
+     * GETBIT [key] [offset]：获取键 key 对应的值的偏移量为 offset 位置的值，返回值为 0 或 1.
+     * spring-data-redis 封装之后，入参及返回值都对应成了 true/false.
+     *
+     * @see <a href="http://redis.io/commands/setbit">Redis Documentation: SETBIT</a>
+     * @see <a href="http://doc.redisfans.com/string/setbit.html">Redis 命令参考: SETBIT</a>
+     * @see <a href="http://redis.io/commands/getbit">Redis Documentation: GETBIT</a>
+     * @see <a href="http://doc.redisfans.com/string/getbit.html">Redis 命令参考: GETBIT</a>
+     */
+    @Test
+    public void setAndGetBitTest() {
+        // 当 key 不存在的时候，返回 false
+        boolean result1 = valueOps.getBit(k1, 3);
+        assertFalse(result1);
+        // 设置偏移量为 3 位置的值为 true
+        // 由于 k1 不存在，所以初始化一个字节 0000 0000，然后设置偏移量为 3 的位置为 1，所以 k1 对应的值为 0001 0000
+        valueOps.setBit(k1, 3, true);
+        boolean result2 = valueOps.getBit(k1, 3);
+        assertTrue(result2);
+
+        boolean result3 = valueOps.getBit(k1, 4);
+        assertFalse(result3);
+    }
 }
