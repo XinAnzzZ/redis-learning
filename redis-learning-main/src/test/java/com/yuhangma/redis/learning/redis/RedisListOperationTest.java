@@ -2,6 +2,7 @@ package com.yuhangma.redis.learning.redis;
 
 import com.yuhangma.redis.learning.RedisLearningAppTest;
 import com.yuhangma.redis.learning.model.PersonDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,6 +13,7 @@ import java.util.Optional;
  * @since 2020/08/29
  */
 @SuppressWarnings("all")
+@Slf4j
 public class RedisListOperationTest extends RedisLearningAppTest {
 
     /**

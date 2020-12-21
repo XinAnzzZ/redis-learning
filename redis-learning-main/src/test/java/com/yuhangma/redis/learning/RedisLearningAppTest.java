@@ -35,11 +35,11 @@ public class RedisLearningAppTest {
      * before test 中删除这些 key，after test 中也会删除一次。
      */
     protected static final String
-            k1 = UNIT_TEST_KEY_PREFIX + 1,
-            k2 = UNIT_TEST_KEY_PREFIX + 2,
-            k3 = UNIT_TEST_KEY_PREFIX + 3,
-            k4 = UNIT_TEST_KEY_PREFIX + 4,
-            k5 = UNIT_TEST_KEY_PREFIX + 5;
+        k1 = UNIT_TEST_KEY_PREFIX + 1,
+        k2 = UNIT_TEST_KEY_PREFIX + 2,
+        k3 = UNIT_TEST_KEY_PREFIX + 3,
+        k4 = UNIT_TEST_KEY_PREFIX + 4,
+        k5 = UNIT_TEST_KEY_PREFIX + 5;
 
     protected static final String v1 = "v1", v2 = "v2", v3 = "v3", v4 = "v4", v5 = "v5";
 

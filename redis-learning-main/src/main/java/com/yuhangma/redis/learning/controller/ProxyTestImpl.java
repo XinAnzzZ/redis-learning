@@ -46,13 +46,13 @@ public class ProxyTestImpl implements ProxyTest {
 
     private static void JDKProxyTest() {
         ProxyTest proxyTest = (ProxyTest) Proxy.newProxyInstance(
-                ProxyTest.class.getClassLoader(),
-                new Class[]{ProxyTest.class},
-                (proxy, method, args1) -> {
-                    method.invoke(new ProxyTestImpl());
-                    System.out.println("proxy run...");
-                    return proxy;
-                });
+            ProxyTest.class.getClassLoader(),
+            new Class[]{ProxyTest.class},
+            (proxy, method, args1) -> {
+                method.invoke(new ProxyTestImpl());
+                System.out.println("proxy run...");
+                return proxy;
+            });
         proxyTest.run();
     }
 
